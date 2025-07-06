@@ -3,13 +3,29 @@ workflows:
     name: Android Release
     environment:
       groups:
-        - keystore # Only if you need signing (see next section)
+        - keystore # Remove if not using app signing
+      android_sdk:
+        ndk: "21.4.7075529" # Stable NDK version
     scripts:
-      - flutter pub get
-      - flutter build apk --release
+      - name: Set up Android SDK
+        script: |
+          sdkmanager --install "ndk;21.4.7075529"
+          echo "ndk.dir=$ANDROID_SDK_ROOT/ndk/21.4.7075529" >> local.properties
+      - name: Install dependencies
+        script: flutter pub get
+      - name: Build Release APK
+        script: flutter build apk --release --no-shrink
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
       email:
         recipients:
-          - your-email@example.com # Replace with your email
+          tangihaiduwa065@gmail.com # Replace with your actual email
+      scripts:
+        - name: Notify Slack
+          script: |
+            if [ "$CM_BUILD_STATUS" == "success" ]; then
+              curl -X POST -H 'Content-type: application/json' \
+              --data '{"text":"Android build succeeded!\nDownload: $CM_APK_PATH"}' \
+              YOUR_SLACK_WEBHOOK_URL
+            fi
