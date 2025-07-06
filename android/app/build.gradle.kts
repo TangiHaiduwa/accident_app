@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.accident_alert_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = /* flutter.ndkVersion */"none"
+    ndkVersion = "21.4.7075529"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
